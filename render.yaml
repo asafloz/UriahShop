@@ -10,6 +10,10 @@ services:
         value: production
       - key: JWT_SECRET
         generateValue: true
-      - key: DB_DIR
-        value: /tmp
+      - key: DATABASE_URL
+        fromDatabase: uriah-db
+
+databases:
+  - name: uriah-db
+    plan: free
 

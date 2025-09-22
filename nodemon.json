@@ -1,0 +1,1 @@
+{watch:[server,public],ext:js,json,html,css,exec:node server/index.js}

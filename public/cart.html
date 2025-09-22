@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>עגלה ותשלום</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <div>עגלה</div>
+    <nav>
+      <a href="/">חזרה לחנות</a>
+      <a href="/admin.html">ניהול</a>
+    </nav>
+  </header>
+  <div class="container">
+    <div id="cartContainer"></div>
+    <div class="mt">
+      <div class="mb"><strong>בחר אמצעי תשלום:</strong></div>
+      <div class="row mb">
+        <label><input type="radio" name="pay" value="paypal"> PayPal</label>
+        <label><input type="radio" name="pay" value="cash" checked> מזומן</label>
+      </div>
+      <div id="cashInfo" class="mb">בעת בחירה במזומן: יש להעביר את הסכום דרך פייבוקס למספר <strong>054-788-6286</strong>. לאחר ההעברה, השלימו הזמנה.</div>
+      <button id="placeOrderBtn">השלמת הזמנה</button>
+      <div id="result" class="mt"></div>
+    </div>
+  </div>
+  <script src="/cart.js"></script>
+</body>
+</html>
+

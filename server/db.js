@@ -2,7 +2,8 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-const dbDirectoryPath = path.join(process.cwd(), 'db');
+// Allow overriding DB directory via env (useful for Render persistent disk)
+const dbDirectoryPath = process.env.DB_DIR || path.join(process.cwd(), 'db');
 const dbFilePath = path.join(dbDirectoryPath, 'shop.db');
 
 if (!fs.existsSync(dbDirectoryPath)) {

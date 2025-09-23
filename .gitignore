@@ -1,0 +1,18 @@
+node_modules/
+uploads/
+db/
+*.log
+npm-debug.log*
+.DS_Store
+.env
+*.sqlite
+*.db
+/.railway
+/.render
+/.vercel
+
+# build caches
+.cache/
+.tmp/
+dist/
+build/

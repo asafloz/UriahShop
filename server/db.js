@@ -1,9 +1,38 @@
 import pkg from 'pg';
 const { Pool } = pkg;
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+function createPool() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (databaseUrl) {
+    return new Pool({
+      connectionString: databaseUrl,
+      ssl: { rejectUnauthorized: false },
+    });
+  }
+  return new Pool({
+    host: process.env.PGHOST || '127.0.0.1',
+    port: Number(process.env.PGPORT || 5432),
+    user: process.env.PGUSER || 'postgres',
+    password: process.env.PGPASSWORD || undefined,
+    database: process.env.PGDATABASE || 'postgres',
+  });
+}
+
+const pool = createPool();
 
 async function initSchema() {
+  // Wait for database to be reachable (useful on cold starts)
+  const maxAttempts = 10;
+  const delayMs = 1000;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await pool.query('SELECT 1');
+      break;
+    } catch (e) {
+      if (attempt === maxAttempts) throw e;
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+  }
   await pool.query(`
   CREATE TABLE IF NOT EXISTS products (
     id SERIAL PRIMARY KEY,

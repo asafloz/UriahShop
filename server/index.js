@@ -49,17 +49,31 @@ function requireAuth(req, res, next) {
 const api = express.Router();
 
 // Products
-api.get('/products', (req, res) => {
-  res.json(db.listProducts());
+api.get('/products', async (req, res) => {
+  try {
+    const products = await db.listProducts();
+    console.log('Products loaded:', products.length);
+    res.json(products);
+  } catch (error) {
+    console.error('Error loading products:', error);
+    res.status(500).json({ error: 'Failed to load products' });
+  }
 });
 
-api.post('/products', requireAuth, (req, res) => {
-  const { name, imageUrl, price } = req.body;
-  if (!name || typeof price !== 'number') {
-    return res.status(400).json({ error: 'name and price are required' });
+api.post('/products', requireAuth, async (req, res) => {
+  try {
+    const { name, imageUrl, price } = req.body;
+    console.log('Adding product:', { name, imageUrl, price });
+    if (!name || typeof price !== 'number') {
+      return res.status(400).json({ error: 'name and price are required' });
+    }
+    const product = await db.addProduct({ name, imageUrl, price });
+    console.log('Product added:', product);
+    res.json(product);
+  } catch (error) {
+    console.error('Error adding product:', error);
+    res.status(500).json({ error: 'Failed to add product' });
   }
-  const product = db.addProduct({ name, imageUrl, price });
-  res.json(product);
 });
 
 api.put('/products/:id', requireAuth, (req, res) => {
@@ -160,6 +174,7 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
+  console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
 });
 
 

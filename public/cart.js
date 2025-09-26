@@ -89,3 +89,4 @@ document.getElementById('placeOrderBtn').addEventListener('click', placeOrder);
 renderCart();
 
 
+

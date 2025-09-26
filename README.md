@@ -27,3 +27,4 @@ Deploy
 - You can deploy this as a Node app on services like Render/Heroku/Fly.io. Ensure persistent storage for `db/shop.db` or use external DB.
 
 
+

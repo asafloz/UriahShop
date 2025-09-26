@@ -85,21 +85,27 @@ async function addProduct() {
     if (!up.ok) { document.getElementById('productMsg').textContent = udata.error || 'שגיאת העלאה'; return; }
     imageUrl = udata.url;
   }
-  const res = await fetch('/api/products', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token() },
-    body: JSON.stringify({ name, imageUrl, price: Math.round(priceShekel * 100) })
-  });
-  const data = await res.json();
-  const msg = document.getElementById('productMsg');
-  if (res.ok) {
-    msg.textContent = 'נוסף.';
-    document.getElementById('pname').value = '';
-    document.getElementById('pprice').value = '';
-    document.getElementById('pimgfile').value = '';
-    loadProducts();
-  } else {
-    msg.textContent = data.error || 'שגיאה';
+  try {
+    const res = await fetch('/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token() },
+      body: JSON.stringify({ name, imageUrl, price: Math.round(priceShekel * 100) })
+    });
+    const data = await res.json();
+    const msg = document.getElementById('productMsg');
+    if (res.ok) {
+      msg.textContent = 'נוסף בהצלחה.';
+      document.getElementById('pname').value = '';
+      document.getElementById('pprice').value = '';
+      document.getElementById('pimgfile').value = '';
+      loadProducts();
+    } else {
+      console.error('Add product error:', data);
+      msg.textContent = data.error || 'שגיאה בהוספת מוצר';
+    }
+  } catch (error) {
+    console.error('Add product error:', error);
+    document.getElementById('productMsg').textContent = 'שגיאת רשת';
   }
 }
 

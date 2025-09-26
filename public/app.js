@@ -51,3 +51,4 @@ function render(products) {
 fetchProducts().then(render);
 
 
+

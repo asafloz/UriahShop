@@ -76,17 +76,17 @@ api.post('/products', requireAuth, async (req, res) => {
   }
 });
 
-api.put('/products/:id', requireAuth, (req, res) => {
+api.put('/products/:id', requireAuth, async (req, res) => {
   const id = Number(req.params.id);
   const { name, imageUrl, price } = req.body;
-  const ok = db.updateProduct({ id, name, imageUrl, price });
+  const ok = await db.updateProduct({ id, name, imageUrl, price });
   if (!ok) return res.status(400).json({ error: 'No changes or not found' });
   res.json({ success: true });
 });
 
-api.delete('/products/:id', requireAuth, (req, res) => {
+api.delete('/products/:id', requireAuth, async (req, res) => {
   const id = Number(req.params.id);
-  const ok = db.deleteProduct(id);
+  const ok = await db.deleteProduct(id);
   res.json({ success: ok });
 });
 
@@ -107,12 +107,12 @@ api.post('/upload', requireAuth, upload.single('image'), (req, res) => {
 });
 
 // Orders
-api.post('/orders', (req, res) => {
+api.post('/orders', async (req, res) => {
   const { items, paymentMethod } = req.body;
   if (!Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'items required' });
   }
-  if (!['paypal', 'cash'].includes(paymentMethod)) {
+  if (!['cash'].includes(paymentMethod)) {
     return res.status(400).json({ error: 'invalid paymentMethod' });
   }
   // Calculate total in agorot
@@ -131,22 +131,27 @@ api.post('/orders', (req, res) => {
       quantity: item.quantity,
     });
   }
-  const order = db.createOrder({ items: normalizedItems, total, paymentMethod });
-  res.json(order);
+  try {
+    const order = await db.createOrder({ items: normalizedItems, total, paymentMethod });
+    res.json(order);
+  } catch (e) {
+    console.error('Create order error:', e);
+    res.status(500).json({ error: 'Failed to create order' });
+  }
 });
 
-api.get('/orders', requireAuth, (req, res) => {
+api.get('/orders', requireAuth, async (req, res) => {
   const includeArchived = String(req.query.includeArchived || 'false') === 'true';
-  res.json(db.listOrders({ includeArchived }));
+  res.json(await db.listOrders({ includeArchived }));
 });
 
-api.post('/orders/:orderUid/complete', requireAuth, (req, res) => {
-  const ok = db.markOrderCompleted(req.params.orderUid);
+api.post('/orders/:orderUid/complete', requireAuth, async (req, res) => {
+  const ok = await db.markOrderCompleted(req.params.orderUid);
   res.json({ success: ok });
 });
 
-api.post('/orders/:orderUid/archive', requireAuth, (req, res) => {
-  const ok = db.archiveOrder(req.params.orderUid);
+api.post('/orders/:orderUid/archive', requireAuth, async (req, res) => {
+  const ok = await db.archiveOrder(req.params.orderUid);
   res.json({ success: ok });
 });
 
